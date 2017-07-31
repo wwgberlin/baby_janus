@@ -1,0 +1,38 @@
+version: '2'
+services:
+
+  dns:
+    image: andyshinn/dnsmasq
+    cap_add:
+      - NET_ADMIN
+    ports:
+      - "53:53/tcp"
+      - "53:53/udp"
+    command: -A /wwgberlin/127.0.0.1
+
+  proxy:
+    image: jwilder/nginx-proxy
+    ports:
+      - "80:80"
+    volumes:
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+    networks:
+      - network
+
+  baby_janus:
+    image: baby_janus
+    build:
+      context: ./main
+    command: go run /go/src/github.com/wwgberlin/baby_janus/main.go
+    volumes:
+      - ./main:/go/src/github.com/wwgberlin/baby_janus
+    networks:
+      - network
+    depends_on:
+      - dns
+      - proxy
+    environment:
+      - VIRTUAL_HOST=main.wwgberlin
+
+networks:
+  network:

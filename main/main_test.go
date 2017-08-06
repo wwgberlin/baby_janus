@@ -6,19 +6,25 @@ import (
 	"fmt"
 	"net/http"
 	"testing"
+	"runtime"
 )
 
+func startServer(){
+	go main()
+	runtime.Gosched()
+}
+
 func TestBasicProxy(t *testing.T) {
+	startServer()
+
 	calledBack := false
 	origin := "/origin"
 	target := "http://127.0.0.1:8080/target"
 
-	http.HandleFunc("/origin", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintf(w, "it worked")
+	http.HandleFunc("/target", func(w http.ResponseWriter, r *http.Request) {
 		calledBack = true
 	})
 
-	go main()
 
 	if b, err := json.Marshal(Endpoint{Origin: origin, Target: target}); err != nil {
 		t.Error(err.Error())

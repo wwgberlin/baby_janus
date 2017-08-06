@@ -34,5 +34,53 @@ services:
     environment:
       - VIRTUAL_HOST=main.wwgberlin
 
+  server1:
+    image: some_server
+    build:
+      context: ./server
+    command: go run /go/src/github.com/wwgberlin/baby_janus/server/main.go
+    volumes:
+      - ./server:/go/src/github.com/wwgberlin/baby_janus/server
+    networks:
+      - network
+    depends_on:
+      - dns
+      - proxy
+      - baby_janus
+    environment:
+      - VIRTUAL_HOST=server1.wwgberlin
+
+  server2:
+    image: some_server
+    build:
+      context: ./server
+    command: go run /go/src/github.com/wwgberlin/baby_janus/server/main.go
+    volumes:
+      - ./server:/go/src/github.com/wwgberlin/baby_janus/server
+    networks:
+      - network
+    depends_on:
+      - dns
+      - proxy
+      - baby_janus
+    environment:
+      - VIRTUAL_HOST=server2.wwgberlin
+
+  server3:
+    image: some_server
+    build:
+      context: ./server
+    command: go run /go/src/github.com/wwgberlin/baby_janus/server/main.go
+    volumes:
+      - ./server:/go/src/github.com/wwgberlin/baby_janus/server
+    networks:
+      - network
+    depends_on:
+      - dns
+      - proxy
+      - baby_janus
+    environment:
+      - VIRTUAL_HOST=server3.wwgberlin
+
 networks:
   network:

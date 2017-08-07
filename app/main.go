@@ -15,8 +15,6 @@ type (
 	}
 )
 
-const NUM_PARTS = 136
-
 func proxyHandler(target string) func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, request *http.Request) {
 		resp, err := http.Get(target)
@@ -46,10 +44,6 @@ func registerEndpoint(response http.ResponseWriter, request *http.Request) {
 	}
 }
 
-func notImplemented(w http.ResponseWriter, r *http.Request) {
-	w.WriteHeader(http.StatusNotImplemented)
-}
-
 func helloWorld(w http.ResponseWriter, r *http.Request) {
 	bodies := []string{}
 	for i := 0; i < NUM_PARTS; i++ {
@@ -66,12 +60,8 @@ func helloWorld(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-
-	for i := 0; i < NUM_PARTS; i++ {
-		http.HandleFunc(fmt.Sprintf("/part/%d", i), notImplemented)
-	}
-
 	http.HandleFunc("/", helloWorld)
+	http.HandleFunc("/get_next_cluster_id", newCluster().incrClusterId)
 	http.HandleFunc("/register_endpoint", registerEndpoint)
 	http.ListenAndServe(":8080", nil)
 }

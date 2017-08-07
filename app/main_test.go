@@ -9,7 +9,7 @@ import (
 	"runtime"
 )
 
-func startServer(){
+func startServer() {
 	go main()
 	runtime.Gosched()
 }
@@ -25,7 +25,6 @@ func TestBasicProxy(t *testing.T) {
 		calledBack = true
 	})
 
-
 	if b, err := json.Marshal(Endpoint{Origin: origin, Target: target}); err != nil {
 		t.Error(err.Error())
 		return
@@ -39,4 +38,8 @@ func TestBasicProxy(t *testing.T) {
 	if !calledBack {
 		t.Error("didn't work")
 	}
+}
+
+func TestIncrementClusterId(t *testing.T) {
+	go incrementClusterId()
 }

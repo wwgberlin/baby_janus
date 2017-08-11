@@ -22,12 +22,9 @@ services:
   baby_janus:
     image: baby_janus
     build:
-      context: ./app
-    command: cd /go/src/github.com/wwgberlin/baby_janus/app && go build
-    entrypoint:
-      - /go/src/github.com/wwgberlin/baby_janus/app/main
+      context: ./api
     volumes:
-      - ./app:/go/src/github.com/wwgberlin/baby_janus/app
+      - .:/go/src/github.com/wwgberlin/baby_janus/
     networks:
       - network
     depends_on:

@@ -7,7 +7,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/wwgberlin/baby_janus/gateway/gateway-api"
+	"github.com/wwgberlin/baby_janus/gateway"
 )
 
 const (
@@ -32,7 +32,7 @@ func testRedirect(t *testing.T) {
 		fmt.Fprintf(w, rs)
 	})
 
-	client := gateway_api.NewGatewayClient(domain)
+	client := gateway.NewClient(domain)
 	client.RegisterRoute(orig, fmt.Sprintf("%s%s", domain, dest))
 
 	body := string(mustHttpGet(t, fmt.Sprintf("%s%s", domain, orig)))
@@ -58,7 +58,7 @@ func mustHttpGet(t *testing.T, url string) (body []byte) {
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		panic(fmt.Sprintf("Expected to return status ok. url: %s, returned: %s", url, resp.StatusCode))
+		panic(fmt.Sprintf("Expected to return status ok. url: %s, returned: %d", url, resp.StatusCode))
 	}
 
 	if err != nil {

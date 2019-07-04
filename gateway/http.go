@@ -1,4 +1,4 @@
-package gateway_api
+package gateway
 
 import (
 	"bytes"

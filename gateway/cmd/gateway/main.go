@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"reflect"
 
-	"github.com/wwgberlin/baby_janus/gateway/cluster"
+	"github.com/wwgberlin/baby_janus/gateway"
 )
 
 type (
@@ -17,7 +17,7 @@ type (
 )
 
 func main() {
-	c := cluster.NewCluster()
+	c := gateway.NewCluster()
 
 	//gateway api operations
 	http.HandleFunc("/routes", listRoutes)
@@ -29,10 +29,7 @@ func main() {
 	http.ListenAndServe(":8080", nil)
 }
 
-
-/*
-	handler to list all routes the gateway is responding to
- */
+// handler to list all routes the gateway is responding to
 func listRoutes(w http.ResponseWriter, r *http.Request) {
 	httpMux := reflect.ValueOf(http.DefaultServeMux).Elem()
 	finList := httpMux.FieldByIndex([]int{1})
@@ -45,21 +42,15 @@ func listRoutes(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, string(b))
 }
 
-/*
-	seed handler for cluster randomization operations
- */
-
-func getSeed(c cluster.Cluster) func(w http.ResponseWriter, r *http.Request) {
+// seed handler for cluster randomization operations
+func getSeed(c gateway.Cluster) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, fmt.Sprintf("%v", c.GetSeed()))
 	}
 }
 
-/*
-	incrClusterId - returns handler to increment the cluster servers size
- */
-
-func incrClusterId(c cluster.Cluster) func(w http.ResponseWriter, r *http.Request) {
+// incrClusterId - returns handler to increment the cluster servers size
+func incrClusterId(c gateway.Cluster) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, fmt.Sprintf("%v", c.IncrClusterId()))
 	}

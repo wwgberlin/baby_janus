@@ -13,7 +13,7 @@ Have a look at the project - there are 3 components inside the project:
 When you are done we will use docker to run everything (we will start 10 servers instances to simulate a cluster, the test app and the gateway app to allow communication between them all).
     
 ### Steps
-1. Assign an http handler function to the path: `/register_endpoint`
+1. Assign an http handler function to the path: `/register-endpoint`
 2. The handler will receive post HTTP messages with the json format
 
 ```javascript
@@ -29,7 +29,7 @@ When you are done we will use docker to run everything (we will start 10 servers
       Now navigate to http://127.0.0.1:8080/parts to see the results.
 
 ### Too easy?
-You may have noticed that your implementation doesn't support calling register_endpoint with different targets but the same origin.
+You may have noticed that your implementation doesn't support calling register-endpoint with different targets but the same origin.
 Add a round robin mechanism that will allow registering mulitple endpoints with the same origin in the API while iterating over the destinations.
 
 ### A little docker

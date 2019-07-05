@@ -54,19 +54,19 @@ func mustHttpGet(t *testing.T, url string) (body []byte) {
 	}()
 
 	if resp.StatusCode == http.StatusNotFound {
-		panic(fmt.Sprintf("Not found %s", url))
+		t.Fatalf("Not found %s", url)
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		panic(fmt.Sprintf("Expected to return status ok. url: %s, returned: %d", url, resp.StatusCode))
+		t.Fatalf("Expected to return status ok. url: %s, returned: %d", url, resp.StatusCode)
 	}
 
 	if err != nil {
-		panic(err)
+		t.Fatalf("unexpected error %s", err.Error())
 	}
 	body, err = ioutil.ReadAll(resp.Body)
 	if err != nil {
-		panic(err)
+		t.Fatalf("unexpected error %s", err.Error())
 	}
 	return body
 }

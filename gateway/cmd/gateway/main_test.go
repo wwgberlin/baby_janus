@@ -5,7 +5,6 @@ import (
 	"io/ioutil"
 	"net/http"
 	"testing"
-	"time"
 
 	"github.com/wwgberlin/baby_janus/gateway"
 )
@@ -16,37 +15,47 @@ const (
 	dest   = "/dest"
 )
 
-func TestRedirects(t *testing.T) {
+func TestProxy(t *testing.T) {
 	setup()
 
-	t.Run("Test Redirect - Simple", testRedirect)
+	testProxy(t)
 }
 
-func testRedirect(t *testing.T) {
-
+func testProxy(t *testing.T) {
 	rs := "good job"
-	rc := false
+	found := false
 
+	cookie := http.Cookie{Name: "test", Value: "cookie"}
 	http.HandleFunc(dest, func(w http.ResponseWriter, r *http.Request) {
-		rc = true
+		if len(r.Cookies()) == 0 || r.Cookies()[0].Name != cookie.Name || r.Cookies()[0].Value != cookie.Value {
+			t.Fatalf("Expcetd to receive the original request's cookie")
+		}
+		found = true
 		fmt.Fprintf(w, rs)
 	})
 
 	client := gateway.NewClient(domain)
-	client.RegisterRoute(orig, fmt.Sprintf("%s%s", domain, dest))
+	if err := client.RegisterRoute(orig, fmt.Sprintf("%s%s", domain, dest)); err != nil {
+		t.Fatal(err)
+	}
 
-	body := string(mustHttpGet(t, fmt.Sprintf("%s%s", domain, orig)))
+	body := string(httpGet(t, fmt.Sprintf("%s%s", domain, orig), &cookie))
 	if rs != body {
 		t.Error("http body is incorrect", body)
 	}
 
-	if !rc {
+	if !found {
 		t.Error("failed to reach destination")
 	}
 }
 
-func mustHttpGet(t *testing.T, url string) (body []byte) {
-	resp, err := http.Get(url)
+func httpGet(t *testing.T, url string, cookie *http.Cookie) []byte {
+	req, _ := http.NewRequest("GET", url, nil)
+	if cookie != nil {
+		req.AddCookie(cookie)
+	}
+	var client http.Client
+	resp, err := client.Do(req)
 	defer func() {
 		if resp != nil && resp.Body != nil {
 			resp.Body.Close()
@@ -64,7 +73,7 @@ func mustHttpGet(t *testing.T, url string) (body []byte) {
 	if err != nil {
 		t.Fatalf("unexpected error %s", err.Error())
 	}
-	body, err = ioutil.ReadAll(resp.Body)
+	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		t.Fatalf("unexpected error %s", err.Error())
 	}
@@ -72,6 +81,7 @@ func mustHttpGet(t *testing.T, url string) (body []byte) {
 }
 
 func setup() {
-	go main()
-	<-time.After(10 * time.Millisecond) //give the server some time to start
+	ready := make(chan struct{})
+	go run(ready)
+	<-ready
 }

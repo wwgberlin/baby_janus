@@ -26,7 +26,7 @@ func (client *Client) RegisterRoute(orig string, dest string) error {
 		err = fmt.Errorf("failed registering route %s => %s reason: %s", orig, dest, err.Error())
 	}
 
-	mustHttpPost(fmt.Sprintf("%s/register-endpoint", client.gatewayServer), "application/json", b)
+	err = httpPost(fmt.Sprintf("%s/register-endpoint", client.gatewayServer), "application/json", b)
 	return err
 }
 

@@ -17,6 +17,11 @@ type (
 )
 
 func main() {
+	ready := make(chan struct{})
+	run(ready)
+}
+
+func run(ready chan struct{}) {
 	c := gateway.NewCluster()
 
 	//gateway api operations
@@ -38,7 +43,11 @@ func main() {
 	// 6. Copy the response body
 	// 7. This should work
 
+	go func() {
+		close(ready)
+	}()
 	http.ListenAndServe(":8080", nil)
+
 }
 
 // handler to list all routes the gateway is responding to

@@ -20,11 +20,11 @@ func main() {
 	c := gateway.NewCluster()
 
 	//gateway api operations
-	http.HandleFunc("/routes/", listRoutes)
+	http.HandleFunc("/routes", listRoutes)
 
 	//cluster operations
-	http.HandleFunc("/next_cluster_id/", incrClusterId(c))
-	http.HandleFunc("/seed/", getSeed(c))
+	http.HandleFunc("/next_cluster_id", incrClusterId(c))
+	http.HandleFunc("/seed", getSeed(c))
 
 	// reverse proxy - register a new endpoint from orig to dest:
 	// 1. Create an http request to the destination endpoint using the method of the a original request

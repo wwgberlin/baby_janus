@@ -2,10 +2,12 @@ package main
 
 import (
 	"fmt"
+	"io"
+	"log"
 	"net/http"
 	"os"
+
 	"github.com/wwgberlin/baby_janus/gateway"
-	"io"
 )
 
 const numParts = 136
@@ -36,6 +38,7 @@ func parts(w http.ResponseWriter, r *http.Request) {
 			}
 		}()
 	}
+
 }
 
 func getPartsURLs() []string {
@@ -52,14 +55,13 @@ func helloWorld(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	myDomain := os.Getenv("VIRTUAL_HOST")
-	if myDomain == "" {
-		myDomain = "127.0.0.1:8081"
-	}
+	//myDomain := "127.0.0.1:8081"
+	myDomain := os.Getenv("HOSTNAME") + ":8080"
+
 	client := gateway.NewClient("http://baby_janus_gateway:8080")
-	fmt.Println("registering", "/hi")
+	log.Println("registering", "/hi")
 	client.RegisterRoute("/hi", fmt.Sprintf("http://%v/hi", myDomain))
-	fmt.Println("registering", "/parts")
+	log.Println("registering", "/parts")
 	client.RegisterRoute("/parts", fmt.Sprintf("http://%v/parts", myDomain))
 
 	http.HandleFunc("/hi", helloWorld)
